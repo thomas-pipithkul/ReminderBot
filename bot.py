@@ -1,11 +1,14 @@
 from __future__ import print_function
+import os
 
 import discord
 import asyncio
 from discord.ext import commands
 
-# library for Google Calendar API
+# library to work with .env files
+from dotenv import load_dotenv
 
+# library for Google Calendar API
 import datetime
 import pickle
 import os.path
@@ -15,6 +18,9 @@ from google.auth.transport.requests import Request
 
 # library to parse natural language into datetime
 import parsedatetime
+
+load_dotenv()
+TOKEN = os.getenv('DISCORD_TOKEN')
 
 # create an instance of client (connect it to Discord WebSocket API)
 # client = discord.Client()
@@ -164,7 +170,7 @@ async def upcoming(ctx, num: int):
 
 
 @bot.command(name='create')
-async def add_calendar_event(ctx, summary, *start, end=''):
+async def add_calendar_event(ctx, summary, *start):
     global creds, service
 
     # If there are no (valid) credentials available, let the user log in.
@@ -183,6 +189,7 @@ async def add_calendar_event(ctx, summary, *start, end=''):
 
     # parse the argument
     # starting time
+    # arg = ' '.join(arg)
     start = ' '.join(start)
     cal = parsedatetime.Calendar()
     time_struct, parse_status = cal.parse(start)
@@ -229,6 +236,6 @@ def day_of_week_index(day: str):
 
 
 # Run the bot
-# client.run('NzE5MjY2MjA2OTI5OTExODg5.Xt6kYQ.AiPKcOrSbD5P5Qz1DOycT8pwwIE')
+# client.run()
 # TODO find a way to hide this token more securely
-bot.run('NzE5MjY2MjA2OTI5OTExODg5.Xt6kYQ.AiPKcOrSbD5P5Qz1DOycT8pwwIE')
+bot.run(TOKEN)
