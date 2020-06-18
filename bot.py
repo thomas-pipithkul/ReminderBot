@@ -1,6 +1,7 @@
 from __future__ import print_function
 import os
 
+# library for discord.py API
 import discord
 import asyncio
 from discord.ext import commands
@@ -19,6 +20,11 @@ from google.auth.transport.requests import Request
 # library to parse natural language into datetime
 import parsedatetime
 
+# library for naive and aware datetime
+# resource: https://vinta.ws/code/timezone-in-python-offset-naive-and-offset-aware-datetimes.html
+import tzlocal
+
+# Load discord token from .env file
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 
@@ -86,7 +92,8 @@ async def on_message(message):
             return m.content.startswith('good') and m.channel == channel
 
         msg = await bot.wait_for('message', check=check)
-        await channel.send('That\'s awesome {.author}!)'.format(msg))
+        await msg.add_reaction('\N{THUMBS UP SIGN}')
+        await channel.send('That\'s awesome {.author}!'.format(msg))
 
     if message.content.startswith('thumb'):
         channel = message.channel
@@ -136,7 +143,7 @@ async def here(ctx):
 
 
 @bot.command()
-async def upcoming(ctx, num: int):
+async def upcoming(ctx, num: int = 5):
     global creds, service
 
     # If there are no (valid) credentials available, let the user log in.
@@ -207,27 +214,38 @@ async def add_calendar_event(ctx, *arg):
         summary = arg_str[:start_date_pos].strip()  # remove leading + trailing whitespaces
 
         # add in timezone to the parsed_datetime
-        # TODO make datetime aware with timezone
-        print(parsed_datetime.tzinfo)
+        # TODO could have issue with daylight saving time
+        # https://stackoverflow.com/questions/7065164/how-to-make-an-unaware-datetime-timezone-aware-in-python
+        # Check if parsed_datetime is naive
+        if parsed_datetime.tzinfo is None or parsed_datetime.utcpffset(parsed_datetime) is None:
+            # dt_local_tz = parsed_datetime.replace(tzinfo=datetime.timezone.utc)  # Make datetime aware to UTC
+            local_tz = tzlocal.get_localzone()  # get system timezone
+            dt_local_tz = local_tz.localize(parsed_datetime)  # Make datetime aware to local timezone
+
+        print(date_str)
+        print(dt_local_tz.isoformat())
+        print(dt_local_tz.tzinfo)
 
         # create event dict for Google Calendar API
         event = {
             'summary': summary,
             'start': {
-                'dateTime': '2020-06-18T09:00:00-04:00'
+                'dateTime': dt_local_tz.isoformat()
             },
             'end': {
-                'dateTime': '2020-06-18T11:00:00-04:00'
+                'dateTime': (dt_local_tz + datetime.timedelta(hours=1)).isoformat()
             }
         }
 
         # Call the Calendar API
-        # e = service.events().insert(calendarId='primary', body=event).execute()
+        e = service.events().insert(calendarId='primary', body=event).execute()
 
         # Notify discord with success embedded message
-        embed = discord.Embed(title='🗓️ Event "{}" created'.format(event['summary']),
+        time_str = dt_local_tz.strftime("%I:%M %p %a, %b %d, %Y %Z")
+        embed = discord.Embed(title='🗓️ Event "{}" created'.format(e['summary']),
                               color=discord.Color.blue())
-        embed.add_field(name='Event Time', value=parsed_datetime)
+        embed.add_field(name='Event Time', value=time_str)
+        embed.set_footer(text='Created by {}'.format(ctx.author.display_name))
         await ctx.send(embed=embed)
     else:  # the parsing fail (return None)
         # Notify discord with fail embedded message
