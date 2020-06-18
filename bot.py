@@ -170,7 +170,7 @@ async def upcoming(ctx, num: int):
 
 
 @bot.command(name='create')
-async def add_calendar_event(ctx, summary, *start):
+async def add_calendar_event(ctx, *arg):
     global creds, service
 
     # If there are no (valid) credentials available, let the user log in.
@@ -188,35 +188,49 @@ async def add_calendar_event(ctx, summary, *start):
     service = build('calendar', 'v3', credentials=creds)
 
     # parse the argument
-    # starting time
-    # arg = ' '.join(arg)
-    start = ' '.join(start)
+    # make arg into 1 string instead of tuple
+    arg_str = ' '.join(arg)
+
+    # find where is the time specify in the argument
     cal = parsedatetime.Calendar()
-    time_struct, parse_status = cal.parse(start)
-    arg = datetime.datetime(*time_struct[:6])
+    ret = cal.nlp(arg_str)  # use natural language parsing
 
-    ret = cal.nlp(start)
-    print("lol")
+    # Check the return value from natural language parsing
+    if ret is not None:
+        parsed_datetime = ret[0][0]
+        parse_status = ret[0][1]
+        start_date_pos = ret[0][2]
+        end_date_pos = ret[0][3]
+        date_str = ret[0][4]
 
-    # Call the Calendar API
-    event = {
-        'summary': summary,
-        'start': {
-            'dateTime': '2020-06-18T09:00:00-04:00'
-        },
-        'end': {
-            'dateTime': '2020-06-18T11:00:00-04:00'
+        # parse summary (message from beginning to the character before the date
+        summary = arg_str[:start_date_pos].strip()  # remove leading + trailing whitespaces
+
+        # add in timezone to the parsed_datetime
+        # TODO make datetime aware with timezone
+        print(parsed_datetime.tzinfo)
+
+        # create event dict for Google Calendar API
+        event = {
+            'summary': summary,
+            'start': {
+                'dateTime': '2020-06-18T09:00:00-04:00'
+            },
+            'end': {
+                'dateTime': '2020-06-18T11:00:00-04:00'
+            }
         }
-    }
-    # e = service.events().insert(calendarId='primary', body=event).execute()
 
-    # Success date parsing
-    if parse_status in [1, 2, 3]:  # return 1=date, 2=time, 3=datetime
+        # Call the Calendar API
+        # e = service.events().insert(calendarId='primary', body=event).execute()
+
+        # Notify discord with success embedded message
         embed = discord.Embed(title='🗓️ Event "{}" created'.format(event['summary']),
                               color=discord.Color.blue())
-        embed.add_field(name='Event Time', value=arg)
+        embed.add_field(name='Event Time', value=parsed_datetime)
         await ctx.send(embed=embed)
-    else:
+    else:  # the parsing fail (return None)
+        # Notify discord with fail embedded message
         embed = discord.Embed(title='Event creation failed :(',
                               description="I don't understand the time of the event",
                               color=discord.Color.blue())
