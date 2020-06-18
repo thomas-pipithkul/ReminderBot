@@ -1,0 +1,1 @@
+use on_message to let user assign which class they are taking
