@@ -6,8 +6,9 @@ import discord
 import asyncio
 from discord.ext import commands
 
-# library to work with .env files
+# library for file I/O
 from dotenv import load_dotenv
+import json
 
 # library for Google Calendar API
 import datetime
@@ -29,8 +30,12 @@ import tzlocal
 import greet
 
 # Load discord token from .env file
-load_dotenv()
-TOKEN = os.getenv('DISCORD_TOKEN')
+# load_dotenv()
+# TOKEN = os.getenv('DISCORD_TOKEN')
+with open('./config.json', 'r') as f:
+    config_dict = json.load(f)
+    TOKEN = config_dict['token']
+
 
 # create an instance of client (connect it to Discord WebSocket API)
 # client = discord.Client()

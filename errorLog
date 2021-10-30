@@ -1,0 +1,9 @@
+in a decade
+tomorrow from eleven to four
+tomorrow at 8pm
+in 2 minutes
+in a minute
+
+-create
+    if the event name have time init then it cause the bot to
+    miss parse which one is event which one is time
