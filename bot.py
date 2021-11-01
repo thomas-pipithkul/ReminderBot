@@ -4,7 +4,7 @@ import os
 # library for discord.py API
 import discord
 import asyncio
-from discord.ext import commands
+from discord.ext import commands, tasks
 
 # library for file I/O
 from dotenv import load_dotenv
@@ -17,6 +17,7 @@ import os.path
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
+from google.oauth2.credentials import Credentials
 
 # library to parse natural language into datetime
 import parsedatetime
@@ -28,6 +29,8 @@ import tzlocal
 
 # Cog
 import greet
+import alert_cog
+import cog
 
 # Load discord token from .env file
 # load_dotenv()
@@ -35,7 +38,6 @@ import greet
 with open('./config.json', 'r') as f:
     config_dict = json.load(f)
     TOKEN = config_dict['token']
-
 
 # create an instance of client (connect it to Discord WebSocket API)
 # client = discord.Client()
@@ -56,13 +58,11 @@ async def on_ready():
 
 
     global creds, service
-    # The file token.pickle stores the user's access and refresh tokens, and is
+    # The file token.json stores the user's access and refresh tokens, and is
     # created automatically when the authorization flow completes for the first
     # time.
-    if os.path.exists('CalendarAPITest/token.pickle'):
-        with open('CalendarAPITest/token.pickle', 'rb') as token:
-            creds = pickle.load(token)
-
+    if os.path.exists('token.json'):
+        creds = Credentials.from_authorized_user_file('token.json', SCOPES)
     # If there are no (valid) credentials available, let the user log in.
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
@@ -72,10 +72,12 @@ async def on_ready():
                 'credentials.json', SCOPES)
             creds = flow.run_local_server(port=0)
         # Save the credentials for the next run
-        with open('CalendarAPITest/token.pickle', 'wb') as token:
-            pickle.dump(creds, token)
+        with open('token.json', 'w') as token:
+            token.write(creds.to_json())
 
     service = build('calendar', 'v3', credentials=creds)
+
+    bot.add_cog(alert_cog.AlertCog(bot, service))
 
     # Find the upcoming event
     # Call the Calendar API
@@ -88,17 +90,19 @@ async def on_ready():
                                           orderBy='startTime', timeZone=local_tz).execute()
     events = events_result.get('items', [])
 
-    import pytz
-    channel = bot.guilds[0].text_channels[0]
+    # import pytz
+    # channel = bot.guilds[0].text_channels[0]
+
     # dt = datetime.datetime(2020, month=6, day=30, hour=12, minute=42, second=0, tzinfo=datetime.timezone.utc)
     # dt = dt.astimezone(tz=pytz.timezone('America/New_York'))
-    dt = datetime.datetime.now(pytz.timezone('America/New_York')) + datetime.timedelta(minutes=1)
-    await discord.utils.sleep_until(dt)
-    await channel.send("Done waiting {}".format(dt.strftime("%I:%M %p")))
-    for i in range(5):
-        dt = dt + datetime.timedelta(minutes=1)
-        await discord.utils.sleep_until(dt)
-        await channel.send("Done waiting {}".format(dt.strftime("%I:%M %p")))
+
+    # dt = datetime.datetime.now(pytz.timezone('America/New_York')) + datetime.timedelta(minutes=1)
+    # await discord.utils.sleep_until(dt)
+    # await channel.send("Done waiting {}".format(dt.strftime("%I:%M %p")))
+    # for i in range(5):
+    #     dt = dt + datetime.timedelta(minutes=1)
+    #     await discord.utils.sleep_until(dt)
+    #     await channel.send("Done waiting {}".format(dt.strftime("%I:%M %p")))
 
     # If there is upcoming event in the calendar
     tasks = []
@@ -231,17 +235,15 @@ async def on_command_error(ctx, error):
 # async def slap(ctx, *, reason: Slapper):
 #     await ctx.send(reason)
 
-
-@bot.command()
-async def sched(ctx):
-    await ctx.send('sched')
-
-
 @bot.command(name='test')
 async def test(ctx, *args):
     await ctx.send('Did you {} say {} words: {}'.format(ctx.author, len(args), ', '.join(args)))
     await ctx.send('And that is in {} channel'.format(ctx.message.channel))
 
+@bot.command()
+async def now(ctx):
+    now = datetime.datetime.utcnow()
+    await ctx.send(now)
 
 @bot.command()
 async def delay(ctx, duration: int):
@@ -453,9 +455,21 @@ async def add_calendar_event(ctx, *, arg):
 #     except ValueError:
 #         return -1
 
+# @tasks.loop(seconds=1.0)
+# async def check_events_alert():
+#     channel = bot.guilds[0].text_channels[0]
+#     await channel.send('tick: ')
+#
+# @check_events_alert.before_loop
+# async def before():
+#     await bot.wait_until_ready()
+#
+# check_events_alert.start()
 
 # Add Cog
 bot.add_cog(greet.Greetings(bot))
+
+# bot.add_cog(cog.MyCog(bot))
 
 # Run the bot
 # client.run()
