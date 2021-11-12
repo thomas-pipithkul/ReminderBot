@@ -6,7 +6,9 @@ A Bot that send out alert messages in a Discord server of upcoming events logged
 * [Technologies](#Technologies)
 
 ## Demo
+Create an event
 ![create_cmd](https://user-images.githubusercontent.com/55066273/141549058-e3d1be2f-fe16-4807-8b1b-0a82ebb062f9.gif) 
+![google_calendar](https://user-images.githubusercontent.com/55066273/141594179-f33ae039-55bb-4693-9bf4-5e095fb135dc.gif) Add the event to your Google Calendar
 
 ## Technologies
 Project is created with:
