@@ -6,9 +6,7 @@ A Bot that send out alert messages in a Discord server of upcoming events logged
 * [Technologies](#Technologies)
 
 ## Demo
--- upcoming --
-
-![create_cmd](https://user-images.githubusercontent.com/55066273/141549058-e3d1be2f-fe16-4807-8b1b-0a82ebb062f9.gif)
+![create_cmd](https://user-images.githubusercontent.com/55066273/141549058-e3d1be2f-fe16-4807-8b1b-0a82ebb062f9.gif) 
 
 ## Technologies
 Project is created with:
