@@ -10,8 +10,9 @@ A Bot that send out alert messages in a Discord server of upcoming events logged
   Create event<br></br>
   <img width='500' height='500' src="https://user-images.githubusercontent.com/55066273/141549058-e3d1be2f-fe16-4807-8b1b-0a82ebb062f9.gif">
   <br></br>[optional] Add Event to Google Calendar<br></br>
-  <img width='500' height='500' src="https://user-images.githubusercontent.com/55066273/141594179-f33ae039-55bb-4693-9bf4-5e095fb135dc.gif">
+  <img width='500' height='500' src="https://user-images.githubusercontent.com/55066273/141600756-5708763a-e3e2-4dbb-a7b2-9a8555212fb9.gif">
 </p>
+
 
 ## Technologies
 Project is created with:
