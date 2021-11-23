@@ -202,9 +202,10 @@ class ReminderCog(commands.Cog):
 
 
     @commands.command()
-    async def a(self, ctx, *, title):
-        # title = re.sub(r'\s+', '%20', title)
-        await ctx.send(title)
+    async def now(self, ctx):
+        now_utc = pytz.utc.localize(datetime.utcnow())
+        now_local = datetime.now()
+        await ctx.send(f'now utc: {now_utc}\nnow local: {now_local}')
 
     @commands.command()
     async def upcoming(self, ctx, *arg):
