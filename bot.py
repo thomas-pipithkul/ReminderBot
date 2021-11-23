@@ -29,7 +29,6 @@ import tzlocal
 
 # Cog
 import greet
-import alert_cog
 import reminder_cog
 
 # Load discord token from config file/heroku config vars
@@ -53,45 +52,9 @@ service = None
 DEFAULT_COLOR = discord.Color.blue()
 
 
-
 @bot.event
 async def on_ready():
     print('We have logged in as {0.user}'.format(bot))
-
-    global creds, service
-    # The file token.json stores the user's access and refresh tokens, and is
-    # created automatically when the authorization flow completes for the first
-    # time.
-    if os.path.exists('token.json'):
-        with open('token.json', 'r') as stream:
-            creds_json = json.load(stream)
-        creds = Credentials.from_authorized_user_file('token.json', SCOPES)
-        creds.token = creds_json['token']
-    # If there are no (valid) credentials available, let the user log in.
-    if not creds or not creds.valid:
-        if creds and creds.expired and creds.refresh_token:
-            creds.refresh(Request())
-        else:
-            flow = InstalledAppFlow.from_client_secrets_file(
-                'credentials.json', SCOPES)
-            creds = flow.run_local_server(port=0)
-        # Save the credentials for the next run
-        with open('token.json', 'w') as token:
-            token.write(creds.to_json())
-
-    service = build('calendar', 'v3', credentials=creds)
-
-    # bot.add_cog(alert_cog.AlertCog(bot, service))
-
-
-    # TODO This activate every time a bot use outside module. Figure a new way to greet user
-    # Send bot login message as chat in a first text channel
-    # for guild in bot.guilds:  # A bot can be deployed in multiple server(guild), so iterate over every server
-    #     await guild.text_channels[0].send('I\'m here mortal')
-
-    # channels = client.get_all_channels()
-    # for channel in channels.text_channels:
-    #     await channel.send('You summon me?')
 
 
 @bot.event
