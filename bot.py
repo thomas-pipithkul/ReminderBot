@@ -32,10 +32,14 @@ import greet
 import alert_cog
 import reminder_cog
 
-# Load discord token from config file
-with open('./config.json', 'r') as f:
-    config_dict = json.load(f)
-    TOKEN = config_dict['token']
+# Load discord token from config file/heroku config vars
+is_heroku = os.environ.get('IS_HEROKU', None)
+if is_heroku:
+    TOKEN = os.environ.get('DISCORD_TOKEN')
+else:
+    with open('./config.json', 'r') as f:
+        config_dict = json.load(f)
+        TOKEN = config_dict['token']
 
 # create an instance of client (connect it to Discord WebSocket API)
 # client = discord.Client()

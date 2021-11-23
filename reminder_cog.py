@@ -1,3 +1,4 @@
+import os
 import pymongo
 import discord
 from discord.ext import tasks, commands
@@ -99,15 +100,25 @@ class ReminderCog(commands.Cog):
                 await alert_msg.delete()
 
     def connect_mongodb_atlas(self):
-        # Load mongodb credentials from config file
-        with open('./config.json', 'r') as f:
-            config_dict = json.load(f)
-            username, password = config_dict['username'], config_dict['password']
+        # Load mongodb credentials from config file/heroku config vars
+        is_heroku = os.environ.get('IS_HEROKU', None)
+        if is_heroku:
+            username = os.environ.get('MONGODB_USER')
+            password = os.environ.get('MONGODB_PASS')
 
             uri = f'mongodb+srv://{username}:{password}@reminderbot-cluster.wrdgt.mongodb.net/test?retryWrites=true&w=majority'
             client = pymongo.MongoClient(uri)
             db = client.reminderBot
             self.eventsCollection = db.events
+        else:
+            with open('./config.json', 'r') as f:
+                config_dict = json.load(f)
+                username, password = config_dict['username'], config_dict['password']
+
+                uri = f'mongodb+srv://{username}:{password}@reminderbot-cluster.wrdgt.mongodb.net/test?retryWrites=true&w=majority'
+                client = pymongo.MongoClient(uri)
+                db = client.reminderBot
+                self.eventsCollection = db.events
 
     def get_channel(self, channel_id):
         return discord.utils.get(self.bot.get_all_channels(), id=channel_id)
