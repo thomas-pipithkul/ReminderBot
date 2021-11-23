@@ -33,8 +33,7 @@ import alert_cog
 import reminder_cog
 
 # Load discord token from config file/heroku config vars
-is_heroku = os.environ.get('IS_HEROKU', None)
-if is_heroku:
+if 'DISCORD_TOKEN' in os.environ:
     TOKEN = os.environ.get('DISCORD_TOKEN')
 else:
     with open('./config.json', 'r') as f:

@@ -101,8 +101,7 @@ class ReminderCog(commands.Cog):
 
     def connect_mongodb_atlas(self):
         # Load mongodb credentials from config file/heroku config vars
-        is_heroku = os.environ.get('IS_HEROKU', None)
-        if is_heroku:
+        if 'MONGODB_USER' in os.environ and 'MONGODB_PASS' in os.environ:
             username = os.environ.get('MONGODB_USER')
             password = os.environ.get('MONGODB_PASS')
 
