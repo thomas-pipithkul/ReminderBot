@@ -200,11 +200,11 @@ class ReminderCog(commands.Cog):
                 after = after.astimezone(pytz.utc)
         return limit, flag, after
 
-
     @commands.command()
     async def now(self, ctx):
+        tz = pytz.timezone(self.tz)
         now_utc = pytz.utc.localize(datetime.utcnow())
-        now_local = datetime.now()
+        now_local = datetime.now().astimezone(tz)
         await ctx.send(f'now utc: {now_utc}\nnow local: {now_local}')
 
     @commands.command()
