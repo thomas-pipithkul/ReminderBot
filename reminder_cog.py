@@ -244,9 +244,12 @@ class ReminderCog(commands.Cog):
 
     @commands.command(name='create')
     async def add_calendar_event(self, ctx, *, arg):
+        tz = pytz.timezone(self.tz)
+        now_local = datetime.now().astimezone(tz)
+
         # find where is the time specify in the argument
         cal = parsedatetime.Calendar()
-        ret = cal.nlp(arg)  # use natural language parsing
+        ret = cal.nlp(arg, now_local)  # use natural language parsing assuming the bot tz
 
         # Check the return value from natural language parsing
         if ret is not None:
