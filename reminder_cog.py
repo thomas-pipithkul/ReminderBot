@@ -185,6 +185,7 @@ class ReminderCog(commands.Cog):
     def parse_upcoming(self, arg):
         tz = pytz.timezone(self.tz)
         limit, flag, after = 5, 0, pytz.utc.localize(datetime.utcnow())  # default value
+        now_local = datetime.now().astimezone(tz)
 
         # There is arg for limit
         if arg and arg[0].isnumeric():
@@ -192,7 +193,7 @@ class ReminderCog(commands.Cog):
 
         # There could be arg for datetime filter
         if arg:
-            ret = parsedatetime.Calendar().nlp(' '.join(arg))  # use natural language parsing for datetime
+            ret = parsedatetime.Calendar().nlp(' '.join(arg), now_local)  # use natural language parsing for datetime
             if ret:
                 dt = ret[0]  # use first datetime found
                 flag = dt[1]
