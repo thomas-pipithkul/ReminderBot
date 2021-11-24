@@ -14,7 +14,7 @@ from util import StringFmt, CustomEmbed, DateTimeFmt, GoogleCalendarHttp
 import dateparser
 import parsedatetime
 import pytz
-from datetime import datetime, date, timedelta
+from datetime import datetime, date, time, timedelta
 
 
 class ReminderCog(commands.Cog):
@@ -202,9 +202,12 @@ class ReminderCog(commands.Cog):
 
     @commands.command()
     async def parse(self, ctx, *, dt_str):
+        tz = pytz.timezone(self.tz)
+        now_local = datetime.now().astimezone(tz)
+
         # find where is the time specify in the argument
         cal = parsedatetime.Calendar()
-        ret = cal.nlp(dt_str)  # use natural language parsing
+        ret = cal.nlp(dt_str, now_local)  # use natural language parsing
         if ret is not None:
             ret = ret[0]
             parsed_datetime = ret[0]
