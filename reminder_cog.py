@@ -211,7 +211,7 @@ class ReminderCog(commands.Cog):
         if ret is not None:
             ret = ret[0]
             parsed_datetime = ret[0]
-            await ctx.send(parsed_datetime.strftime("%m/%d/%Y, %I:%M:%S %Z"))
+            await ctx.send(parsed_datetime.strftime("%m/%d/%Y, %I:%M:%S %Z %z"))
         else:
             await ctx.send("I don't know")
 
@@ -220,7 +220,7 @@ class ReminderCog(commands.Cog):
         tz = pytz.timezone(self.tz)
         now_utc = pytz.utc.localize(datetime.utcnow())
         now_local = datetime.now().astimezone(tz)
-        await ctx.send(f'now utc: {now_utc.strftime("%m/%d/%Y, %I:%M:%S %Z")}\nnow local: {now_local.strftime("%m/%d/%Y, %I:%M:%S %Z")}')
+        await ctx.send(f'now utc: {now_utc.strftime("%m/%d/%Y, %I:%M:%S %Z %z")}\nnow local: {now_local.strftime("%m/%d/%Y, %I:%M:%S %Z %z")}')
 
     @commands.command()
     async def upcoming(self, ctx, *arg):

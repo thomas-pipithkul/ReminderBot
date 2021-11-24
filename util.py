@@ -119,7 +119,10 @@ class CustomEmbed:
                                 inline=False)
                 prev_date = start
 
-        embed.set_footer(text=f'🌐 {tz_str}')
+        tz = pytz.timezone(tz_str)
+        now_local = datetime.now().astimezone(tz)
+        utc_offset = now_local.strftime('%z')
+        embed.set_footer(text=f'🌐 {tz_str} {utc_offset}')
         return embed
 
 
