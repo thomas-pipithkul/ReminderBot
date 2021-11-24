@@ -201,6 +201,18 @@ class ReminderCog(commands.Cog):
         return limit, flag, after
 
     @commands.command()
+    async def parse(self, ctx, *, dt_str):
+        # find where is the time specify in the argument
+        cal = parsedatetime.Calendar()
+        ret = cal.nlp(dt_str)  # use natural language parsing
+        if ret is not None:
+            ret = ret[0]
+            parsed_datetime = ret[0]
+            await ctx.send(parsed_datetime)
+        else:
+            await ctx.send("I don't know")
+
+    @commands.command()
     async def now(self, ctx):
         tz = pytz.timezone(self.tz)
         now_utc = pytz.utc.localize(datetime.utcnow())
