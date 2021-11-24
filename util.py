@@ -12,7 +12,8 @@ class StringFmt:
 
     @staticmethod
     def field_date_format(start_date, tz_str):
-        today = datetime.now(pytz.timezone(tz_str)).today().date()
+        tz = pytz.timezone(tz_str)
+        today = datetime.now().astimezone(tz).today().date()
         tomorrow = today + timedelta(days=1)
         if today == start_date:
             return f'Today [{start_date:%b} {start_date:%d}]'
