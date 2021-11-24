@@ -123,7 +123,7 @@ class CustomEmbed:
         now_local = datetime.now().astimezone(tz)
         utc_offset = now_local.strftime('%z')
         utc_offset = f"{utc_offset[:-2]}:{utc_offset[-2:]}"
-        embed.set_footer(text=f'🌐 {tz_str} utc{utc_offset}')
+        embed.set_footer(text=f'🌐 {tz_str} (UTC{utc_offset})')
         return embed
 
 
