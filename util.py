@@ -119,11 +119,15 @@ class CustomEmbed:
                                 inline=False)
                 prev_date = start
 
-        tz = pytz.timezone(tz_str)
-        now_local = datetime.now().astimezone(tz)
-        utc_offset = now_local.strftime('%z')
-        utc_offset = f"{utc_offset[:-2]}:{utc_offset[-2:]}"
-        embed.set_footer(text=f'🌐 {tz_str} (UTC{utc_offset})')
+        def tz_format(tz_str):
+            tz = pytz.timezone(tz_str)
+            now_local = datetime.now().astimezone(tz)
+            utc_offset = now_local.strftime('%z')
+            utc_offset = f"{utc_offset[:-2]}:{utc_offset[-2:]}"
+            return f'{now_local.strftime("%Z")} (UTC{utc_offset})'
+
+        # embed.set_footer(text=f'🌐 {tz_str} (UTC{utc_offset})')
+        embed.set_footer(text=f'🌐 {tz_format(tz_str)}')
         return embed
 
 
