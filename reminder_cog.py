@@ -200,27 +200,27 @@ class ReminderCog(commands.Cog):
                 after = after.astimezone(pytz.utc)
         return limit, flag, after
 
-    # @commands.command()
-    # async def parse(self, ctx, *, dt_str):
-    #     tz = pytz.timezone(self.tz)
-    #     now_local = datetime.now().astimezone(tz)
-    #
-    #     # find where is the time specify in the argument
-    #     cal = parsedatetime.Calendar()
-    #     ret = cal.nlp(dt_str, now_local)  # use natural language parsing
-    #     if ret is not None:
-    #         ret = ret[0]
-    #         parsed_datetime = ret[0]
-    #         await ctx.send(parsed_datetime.strftime("%m/%d/%Y, %I:%M:%S %Z %z"))
-    #     else:
-    #         await ctx.send("I don't know")
-    #
-    # @commands.command()
-    # async def now(self, ctx):
-    #     tz = pytz.timezone(self.tz)
-    #     now_utc = pytz.utc.localize(datetime.utcnow()).strftime("%m/%d/%Y, %I:%M:%S %Z %z")
-    #     now_local = datetime.now().astimezone(tz).strftime("%m/%d/%Y, %I:%M:%S %Z %z")
-    #     await ctx.send(f'now utc: {now_utc}\nnow local: {now_local}')
+    @commands.command()
+    async def parse(self, ctx, *, dt_str):
+        tz = pytz.timezone(self.tz)
+        now_local = datetime.now().astimezone(tz)
+
+        # find where is the time specify in the argument
+        cal = parsedatetime.Calendar()
+        ret = cal.nlp(dt_str, now_local)  # use natural language parsing
+        if ret is not None:
+            ret = ret[0]
+            parsed_datetime = ret[0]
+            await ctx.send(parsed_datetime.strftime("%m/%d/%Y, %I:%M:%S %Z %z"))
+        else:
+            await ctx.send("I don't know")
+
+    @commands.command()
+    async def now(self, ctx):
+        tz = pytz.timezone(self.tz)
+        now_utc = pytz.utc.localize(datetime.utcnow()).strftime("%m/%d/%Y, %I:%M:%S %Z %z")
+        now_local = datetime.now().astimezone(tz).strftime("%m/%d/%Y, %I:%M:%S %Z %z")
+        await ctx.send(f'now utc: {now_utc}\nnow local: {now_local}')
 
     @commands.command()
     async def upcoming(self, ctx, *arg):
