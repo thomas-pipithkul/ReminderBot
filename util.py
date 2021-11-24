@@ -5,6 +5,14 @@ from datetime import datetime, timedelta
 
 class StringFmt:
     @staticmethod
+    def tz_format(tz_str):
+        tz = pytz.timezone(tz_str)
+        now_local = datetime.now().astimezone(tz)
+        utc_offset = now_local.strftime('%z')
+        utc_offset = f"{utc_offset[:-2]}:{utc_offset[-2:]}"
+        return f'{now_local.strftime("%Z")} (UTC{utc_offset})'
+
+    @staticmethod
     def get_time_str(title: str, start: datetime):
         url = GoogleCalendarHttp.get_event_url(title, start)
         epoch = int(start.timestamp())
@@ -120,15 +128,7 @@ class CustomEmbed:
                                 inline=False)
                 prev_date = start
 
-        def tz_format(tz_str):
-            tz = pytz.timezone(tz_str)
-            now_local = datetime.now().astimezone(tz)
-            utc_offset = now_local.strftime('%z')
-            utc_offset = f"{utc_offset[:-2]}:{utc_offset[-2:]}"
-            return f'{now_local.strftime("%Z")} (UTC{utc_offset})'
-
-        # embed.set_footer(text=f'🌐 {tz_str} (UTC{utc_offset})')
-        embed.set_footer(text=f'🌐 {tz_format(tz_str)}')
+        embed.set_footer(text=f'🌐 {StringFmt.tz_format(tz_str)}')
         return embed
 
 
